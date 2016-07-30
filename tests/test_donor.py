@@ -2,8 +2,12 @@ import tracker.models as models
 import tracker.randgen as randgen
 import tracker.forms as forms
 import tracker.viewutil as viewutil
+import tracker.filters as filters
 
 from django.test import TestCase, TransactionTestCase
+
+from django.contrib.auth import get_user_model
+from social.apps.django_app.default.models import UserSocialAuth
 
 from decimal import Decimal
 import random
@@ -163,3 +167,28 @@ class TestDonorMerge(TransactionTestCase):
         self.assertEquals(len(donationList), rootDonor.donation_set.count())
         for donation in rootDonor.donation_set.all():
             self.assertTrue(donation in donationList)
+
+
+class TestDonorSteamAssociation(TestCase):
+
+    def setUp(self):
+        donorUser = get_user_model().objects.create(username='dummyuser',email='test@email.com',is_active=False)
+        UserSocialAuth.objects.create(user=donorUser,provider='steam',uid='123456')
+        self.donor = models.Donor.objects.create(user=donorUser)
+        self.ev = models.Event.objects.create(
+            short='ev', name='Event', targetamount=5, date=datetime.date.today())
+
+    def test_donation_steam_connection(self):
+        donation = models.Donation.objects.create(donor=self.donor, amount=10, transactionstate='COMPLETED',
+            event=self.ev)
+        assert donation.donor.user.social_auth.filter(provider='steam').first().uid == '123456'
+
+    def test_donation_cache_filter(self):
+        d1 = models.Donation.objects.create(donor=self.donor, amount=10, transactionstate='COMPLETED',
+            event=self.ev, domainId='d1')
+        assert len(filters.get_donor_steam_ids(min_donation=100, event_id=self.ev.id)) == 0
+        
+        d2 = models.Donation.objects.create(donor=self.donor, amount=100, transactionstate='COMPLETED',
+            event=self.ev, domainId='d2')
+        assert '123456' in filters.get_donor_steam_ids(min_donation=100, event_id=self.ev.id)
+

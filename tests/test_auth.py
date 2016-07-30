@@ -8,6 +8,8 @@ import post_office.models
 import tracker.auth
 import tracker.tests.util as test_util
 
+from social.apps.django_app.default.models import UserSocialAuth
+
 AuthUser = get_user_model()
 
 TEST_AUTH_MAIL_TEMPLATE = post_office.models.EmailTemplate(content="user:{{user}}\nurl:{{reset_url}}")
@@ -38,3 +40,14 @@ class TestRegisterEmailSend(TestCase):
         newUser = AuthUser.objects.create(username='dummyuser',email='test@email.com',is_active=False)
         self.assertRaises(Exception, tracker.auth.send_password_reset_mail('', newUser, template=TEST_AUTH_MAIL_TEMPLATE))
     
+
+class TestSocialAuth(TestCase):
+
+    def test_steam_association(self):
+        newUser = AuthUser.objects.create(username='dummyuser',email='test@email.com',is_active=False)
+        socialAuth = UserSocialAuth.objects.create(user=newUser,provider='steam',uid='123456')
+        assert newUser.social_auth.filter(provider='steam').first().uid == '123456'
+
+    def test_no_social_auth(self):
+        nonSocialUser = AuthUser.objects.create(username='dummyuser',email='test@email.com',is_active=False)
+        assert nonSocialUser.social_auth.filter(provider='steam').first() == None
