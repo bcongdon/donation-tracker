@@ -59,6 +59,7 @@ class Donation(models.Model):
   requestedalias = models.CharField(max_length=32, null=True, blank=True, verbose_name='Requested Alias')
   requestedemail = models.EmailField(max_length=128, null=True, blank=True, verbose_name='Requested Contact Email')
   commentlanguage = models.CharField(max_length=32, null=False, blank=False, default='un', choices=LanguageChoices, verbose_name='Comment Language')
+  steamid = models.CharField(max_length=64,blank=True,verbose_name='SteamID 64')
   class Meta:
     app_label = 'tracker'
     permissions = (
