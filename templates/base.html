@@ -69,7 +69,7 @@
         <li><a href="{% url 'tracker.views.index' event='' %}">{% trans "All Events" %}</a></li>
           </ul>
         </li>
-        
+
         {% if user and user.is_authenticated %}
             <li><a href="{% url 'tracker.views.user_index' %}">{% trans "Self Service" %}</a></li>
             <li><a href="{% url 'tracker.views.logout' %}">{% trans "Log Out" %}</a></li>
@@ -93,12 +93,11 @@
 {% block login %}{% endblock %}
 {% block credits %}
 {% if djangoversion and pythonversion %}
-<div class="container-fluid text-center" style="margin-bottom:30px;">{% blocktrans with djangoversion=djangoversion pythonversion=pythonversion %}
-Running on Django with Python {% endblocktrans %}
-<br />{% trans "Python code by UraniumAnchor, SMK, and jdeng" %}
-<br />{% trans "CSS by Cool Matty" %}
-<!-- <br />{% trans "Translated By"%}-->
-
+<div class="container-fluid text-center" style="margin-bottom:30px; margin-top: 12px; text-align: center;">{% blocktrans with djangoversion=djangoversion pythonversion=pythonversion %}
+  Running on Django with Python {% endblocktrans %}
+  <br />{% trans "Python code by UraniumAnchor, SMK, and jdeng" %}
+  <br />{% trans "CSS by Cool Matty" %}
+  <!-- <br />{% trans "Translated By"%}-->
 </div>
 {% endif %}
 {% endblock %}
