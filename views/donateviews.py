@@ -109,6 +109,9 @@ def donate(request, event):
       bidsform = forms.DonationBidFormSet(amount=Decimal('0.00'), data=request.POST, prefix=bidsFormPrefix)
       prizesform = forms.PrizeTicketFormSet(amount=Decimal('0.00'), data=request.POST, prefix=prizeFormPrefix)
   else:
+    steamid = request.session.get('uid', None)
+    donation_total = sum(models.Donation.objects.filter(steamid=steamid).values_list('amount', flat=True)) if steamid else None
+    print donation_total
     commentform = forms.DonationEntryForm(event=event)
     bidsform = forms.DonationBidFormSet(amount=Decimal('0.00'), prefix=bidsFormPrefix)
     prizesform = forms.PrizeTicketFormSet(amount=Decimal('0.00'), prefix=prizeFormPrefix)
