@@ -373,6 +373,17 @@
 		{% endif %}
 		<br />
 
+<!-- Steam Stuff -->
+{% if request.session.uid %}
+  <p>Connected to steam!</p>
+  <form action="{% url 'social:disconnect' 'steam' %}?next={{ request.get_full_path }}" method="POST">
+      {% csrf_token %}
+      <button type="submit">Disconnect from Steam.</button>
+  </form>
+{% else %}
+  <a href="{% url 'social:begin' 'steam' %}?next={{ request.get_full_path }}">Connect to Steam.</a>
+{% endif %}
+
 <form id="bidsform" action="{% url 'tracker.views.donate' event.short %}" method="post" onsubmit="return validateDonationForm();">
   {% csrf_token %}
 
@@ -385,11 +396,6 @@
     {{ commentform.non_field_errors }}
     </span>
     <br>
-    {% if request.session.uid %}
-      <p>Connected to steam!</p>
-    {% else %}
-      <a href="{% url 'social:begin' 'steam' %}?next={{ request.get_full_path }}">Connect to Steam.</a>
-    {% endif %}
     {% for field in commentform.visible_fields %}
         <span style="color:red">
         {{ field.errors }}
