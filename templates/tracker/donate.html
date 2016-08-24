@@ -475,6 +475,42 @@
       </div>
       <br />
       {% endif %}
+
+      {% if hasTicketPrizes %}
+      <div id="prizesTab">
+        <h2>Prize Tickets</h2>
+        <p>This section allows you to put your donation towards winning a prize. Select the prize you wish to use (the filter box will help you find it), select it, and enter the amount of your donation you want to apply towards it. You may split your donation up as many as 10 ways by clicking the "Add Another" link. Please note the minimum amounts required to get at least one entry towards the prize.</p>
+
+        <div id="info">
+          Total Allocated: $<span id="totalprizeallocated"></span> / $<span id="prizedonationtotal"></span>
+          <br />
+          Remaining: $<span id="totalprizeremaining"></span>
+        </div>
+
+        {% for form in prizesform %}
+        <div class="toplevelprizeticketformsetform">
+          <br />
+          {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+          {% endfor %}
+          <span style="color:red">
+        {{ form.non_field_errors }}
+        </span>
+          {% for field in form.visible_fields %}
+          <div>
+            <span style="color:red">
+            {{ field.errors }}
+            </span>
+            {{ field.label_tag }} {{ field }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      <br />
+      {% endif %}
+
+    {{ prizesform.management_form }}
     </div>
   </div>
 
@@ -487,20 +523,6 @@ $(function() {
   $('#bidsform div.toplevelprizeticketformsetform').formset({'added': onAddPrizeAssignmentWidget, 'addText': 'Add Another', 'removed': prizeAmountUpdate, prefix: '{{ prizesform.prefix }}', formCssClass: 'dynamic-prizesform'});
 })
 </script>
-
-<!-- This holds the dialog markup, which we don't want to be visible on the main page. -->
-<div style="display: none;">
-  <div id="dialog_askAccount">
-    <h3>Thank you for donating to Tip of the Hats!</h3>
-    <p>Do you have a Steam account?</p>
-  </div>
-
-  <div id="dialog_askConnect">
-    <p>Do you want to link your Steam account to be eligible to receive in-game items for Team Fortress 2?</p>
-    <div>
-    </div>
-  </div>
-</div>
 
 <form id="disconnectForm" style="display: none;" action="{% url 'social:disconnect' 'steam' %}?next={{ request.get_full_path }}" method="POST">
   {% csrf_token %}
