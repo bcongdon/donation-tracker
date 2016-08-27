@@ -404,18 +404,21 @@
       {{ bidsform.management_form }}
 
       {% if request.session.uid %}
-        {% if request.session.steam_donation_total %}
-          <p>{{ request.session.steam_donation_total }}</p>
-        {% endif %}
         <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-          <b><em>Steam ID: {{ request.session.uid }}</em></b>
+          <b style="font-size: 15px;"><em>Steam ID: {{ request.session.uid }}</em></b>
           <i class="fa fa-check-square-o" style="color: #20cb33;" aria-hidden="true"></i>
         </div>
+
+        {% if request.session.steam_donation_total %}
+        <div>
+          Total donated by this SteamID during #TotH2016: <b style="font-size: larger;">${{ request.session.steam_donation_total }}</b>
+        </div>
+        {% endif %}
 
         <a id="disconnect" href="#disconnect">Disconnect Steam account</a>
       {% else %}
         <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-          <b><em>Steam ID: None</em></b>
+          <b style="font-size: 15px;"><em>Steam ID: None</em></b>
           <i class="fa fa-times-circle" style="color: black;" aria-hidden="true"></i>
         </div>
         <a href="{% url 'social:begin' 'steam' %}?next={{ request.get_full_path }}">
@@ -424,6 +427,23 @@
         <br/>
         <em><small>(Note: Connecting your steam account will require you to fill out this form again)</small></em>
       {% endif %}
+
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 1em;">
+        <h2>Earn in-game TF2 medals for donating!</h2>
+        <small><em>
+          (You must connect your Steam account in order for your donations to count towards a medal.
+          Medals will be awarded a few weeks after the event has concluded.)
+        </em></small>
+        <a href="{{ STATIC_URL }}images/medals_large.png" target="_blank">
+          <img style="max-width: 100%;" src="{{ STATIC_URL }}images/medals_small.png">
+        </a>
+
+        <div style="text-align: center; font-size: 15px;">
+          <span><b>$10</b> - Jaunty Camper</span><br/>
+          <span><b>$30</b> - Jaunty Benefactor</span><br/>
+          <span><b>$100</b> - Jaunty Trailblazer</span>
+        </div>
+      </div>
     </div>
 
     <div id="right" class="section" style="margin-left: 10px;">
@@ -463,7 +483,7 @@
         {{ form.non_field_errors }}
         </span>
           {% for field in form.visible_fields %}
-          <div class="{% if field.name == 'customoptionname' %}mf_newoption{% endif %}">
+          <div class="{% if field.name == 'customoptionname' %}mf_newoption{% endif %}" data-field-name="{{ field.name }}">
             <span style="color:red">
             {{ field.errors }}
             </span>

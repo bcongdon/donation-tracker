@@ -117,6 +117,17 @@ input[type="submit"] {
 	text-transform: uppercase;
 }
 
+.delete-row {
+	display: inline-block;
+	width: 30%;
+	margin-left: 24px;
+}
+
+div[data-field-name="amount"] {
+	width: 60%;
+	display: inline-block;
+}
+
 input[type="submit"] {
 	width: 400px;
 	height: 38px;
