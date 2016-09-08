@@ -26,10 +26,6 @@ a:hover {
 	text-decoration: underline;
 }
 
-.add-row, .delete-row {
-	font-weight: 700;
-}
-
 #container {
 	background-color: #fff;
 	margin-left: auto;
@@ -43,33 +39,44 @@ input, textarea, select {
 	padding: 2px;
 	font-family: 'Source Sans Pro', Verdana;
 	font-size: 12px;
-	margin: 5px 0px;
+	margin-bottom: 8px;
+	width: 100%;
+	box-sizing: border-box;
 }
 
-#right {
-	width: 520px;
-	float: left;
-	margin-bottom: 20px;
-	
+#bidsform {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
-#left  {
-padding-right: 20px;
-	float: left;
-	width: 315px;
-	margin-bottom: 20px;
+#bidsform .fa {
+	font-size: 24px;
+}
+
+#header {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 84px;
+	background-color: #F47425;
+	color: white;
+	text-align: center;
+}
+
+#header h1 {
+	text-transform: uppercase;
 }
 
 #info {
-	font-size: 16px;
-	width: 585px;
+	font-size: 14px;
 	background-color: #f2f2f2;
-	margin: 10px 0px;
+	margin: 10px 0;
 	padding: 10px;
-}
-
-#info span {
-	font-weight: 700;
+	display: flex;
+	justify-content: space-around;
 }
 
 #footer {
@@ -86,44 +93,91 @@ padding-right: 20px;
 }
 
 label {
-	font-size: 14px;
+	font-size: 13px;
+	font-weight: bold;
 }
 
 select.cdonationbidselect {
 	width: 580px;
 }
 
+.add-row,
+.delete-row,
 input[type="submit"] {
-	width: 100px;
+	border-radius: 5px;
+	background-color: #F47425;
+	font-weight: 700;
+	font-size: 17px;
+	color: white;
 	height: 32px;
-	font-size: 20px;
-	text-align: center;
-	clear: both;
+	line-height: 32px;
 	display: block;
+	text-align: center;
+	margin: 0.5em;
+	text-transform: uppercase;
+}
+
+.add-row {
+	margin-top: 1.5em;
+	margin-bottom: -1em;
+}
+
+.delete-row {
+	display: inline-block;
+	width: 30%;
+	margin-left: 24px;
+}
+
+div[data-field-name="amount"] {
+	width: 60%;
+	display: inline-block;
+}
+
+input[type="submit"] {
+	width: 400px;
+	height: 38px;
+	line-height: inherit;
+	font-size: 26px;
 	margin: 20px auto;
-}
-
-/* Donation Page Input Styles */
-#iDonationAmount {
-	width: 90%;
-}
-
-#id_comment {
-	width: 90%;
-}
-
-#id_requestedvisibility {
-	width: 92%;
-}
-
-#id_requestedalias {
-	width: 90%;
-}
-
-#id_requestedemail {
-	width: 90%;
 }
 
 .mf_selectbox {
 	width: 100%;
+}
+
+.mf_groupingLabel,
+.mf_grouping {
+	display: none;
+}
+
+.mf_description-name {
+	font-size: 24px;
+	font-weight: 700;
+	text-align: center;
+}
+
+.mf_description-selected {
+	margin-top: 0.5em;
+	text-align: center;
+	font-size: 16px;
+}
+
+/* Hide the useless "Clear" button */
+.mf_description button {
+	display: none;
+}
+
+.section {
+	width: 360px;
+	margin-bottom: 20px;
+	padding: 16px;
+	background-color: #E6E6E6;
+}
+
+.section-header {
+	text-align: center;
+}
+
+.ply-ok {
+	background-color: #F47425;
 }

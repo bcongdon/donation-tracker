@@ -8,12 +8,14 @@
 {% endblock %}
 
 {% block head %}
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ply.css" />
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}donate.css" />
 
   <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700' rel='stylesheet' type='text/css'>
 
   <script src="{{ STATIC_URL }}jquery.formset.js"></script>
   <script src="{{ STATIC_URL }}donationbids.js"></script>
+  <script src="{{ STATIC_URL }}Ply.min.js"></script>
 
   <script>
 
@@ -53,17 +55,15 @@
 
       for (var i = 0; i < parents.length; ++i)
       {
-        text += "<ul><li>"
-        text += parents[i]['name'];
+        if (i === 0) {
+          text += '<div class="mf_description-name">' + parents[i]['name'] + '</div>';
 
-        if (parents[i]['description']) {
-          text += "<br />Description: " + parents[i]['description'];
+          if (parents[i]['description']) {
+            text += '<div class="mf_description-description">' + parents[i]['description'] + '</div>';
+          }
+        } else {
+          text += '<p class="mf_description-selected">You have selected <b>' + parents[i]['name'] + '</b> for this choice.</p>';
         }
-      }
-
-      for (var i = 0; i < parents.length; ++i)
-      {
-        text += "</li></ul>";
       }
 
       return text;
@@ -162,7 +162,6 @@
     }
 
     function validateDonationForm() {
-
       // TODO: this would otherwise only get set when setting the
       // display values for the prize/bid entries, we may want to
       // restructure that
@@ -310,6 +309,9 @@
     }
 
     $(document).ready(function() {
+      $('#disconnect').click(function () {
+        $('#disconnectForm').submit();
+      });
 
       $(".topleveldonationbidformsetform").each(function(fI, formObj) {
         $(".mf_widget.mf_model_bidtarget").each(function(i, obj) {
@@ -354,11 +356,10 @@
 {% endblock %}
 
 <div id="container">
-
-		<h1>Donations for {{event.name}}</h1>
-		<p>Thank you for donating during the {{event.name}} event! Please read the instructions carefully, as they have changed from previous events. </p>
-		<br />
-		<br />
+  <div id="header">
+    <h1>Donations for {{event.name}}</h1>
+    <p>Thank you for your contribution! Please read the instructions carefully, as they have changed from previous events. </p>
+  </div>
 
 		{% if prizes %}
 		<h1>Prizes you are eligible for right now:</h1>
@@ -373,116 +374,166 @@
 		{% endif %}
 		<br />
 
-<!-- Steam Stuff -->
-{% if request.session.uid %}
-  <p>Connected to steam!</p>
-  <form action="{% url 'social:disconnect' 'steam' %}?next={{ request.get_full_path }}" method="POST">
-      {% csrf_token %}
-      <button type="submit">Disconnect from Steam.</button>
-  </form>
-{% else %}
-  <a href="{% url 'social:begin' 'steam' %}?next={{ request.get_full_path }}">Connect to Steam.</a>
-{% endif %}
-
 <form id="bidsform" action="{% url 'tracker.views.donate' event.short %}" method="post" onsubmit="return validateDonationForm();">
   {% csrf_token %}
 
-  <div id="left">
-    <h2>Your donation</h2>
-    <p>Note that donations may take several minutes to be collected! Using e-check donations
-		are not recommended, as your donation will be delayed by several days. Please refrain from offensive language or hurtful remarks, all donation comments are screened and will
-		be removed from the website if deemed unacceptable.</p>
-    <span style="color:red">
-    {{ commentform.non_field_errors }}
-    </span>
-    <br>
-    {% for field in commentform.visible_fields %}
-        <span style="color:red">
-        {{ field.errors }}
-	</span>
-        <br />
-        {{ field.label_tag }}
-        <br />
-        {{ field }}
-    {% endfor %}
-
-    {{ bidsform.management_form }}
-  </div>
-
-  <div id="right">
-    {% if hasBids %}
-    <div id="bidsTab">
-      <h2>Bidding Challenges/Choices</h2>
-      <p>This section allows you to put your donation to one of our many challenges and choices. Find the choice you wish to use (the filter box will help you find it), select it,
-      and enter the amount of your donation you want to apply to that choice. If you wish to choose a <strong>name</strong>, you will need to use the bid suggestion box on the left, due to software limitations. You may split your donation up as many as 10 ways by clicking the "Add Another" link. </p>
-      <p>If you aren't sure what to put your money towards, click the 'Group' dropdown and select 'Suggestions', we may periodically add house favorites! (e.g. Runner's Choice)</p>
-      <p>You do <strong>not</strong> need to put your donation towards a prize. You are automatically entered into any prize you are eligible for at the time the donation is
-      received by us.</p>
-
-      <div id="info">
-        Total Allocated: $<span id="totalallocated"></span> / $<span id="donationtotal"></span>
-        <br />
-        Remaining: $<span id="totalremaining"></span>
+  <div style="display: flex; justify-content: center; align-items: flex-start;">
+    <div id="left" class="section" style="margin-right: 10px;">
+      <div class="section-header">
+        <h2>Your Donation</h2>
+        <em>REQUIRED</em>
       </div>
 
-      {% for form in bidsform %}
+      <p>Note that donations may take several minutes to be collected! Using e-check donations
+        are not recommended, as your donation will be delayed by several days. Please refrain from offensive language or hurtful remarks, all donation comments are screened and will
+        be removed from the website if deemed unacceptable.</p>
+      <span style="color:red">
+    {{ commentform.non_field_errors }}
+    </span>
+      <br>
+      {% for field in commentform.visible_fields %}
+      <span style="color:red">
+        {{ field.errors }}
+	</span>
+      <br />
+      {{ field.label_tag }}
+      <br />
+      {{ field }}
+      {% endfor %}
+
+      {{ bidsform.management_form }}
+
+      {% if request.session.uid %}
+        <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+          <b style="font-size: 15px;"><em>Steam ID: {{ request.session.uid }}</em></b>
+          <i class="fa fa-check-square-o" style="color: #20cb33;" aria-hidden="true"></i>
+        </div>
+
+        {% if request.session.steam_donation_total %}
+        <div>
+          Total donated by this SteamID during #TotH2016: <b style="font-size: larger;">${{ request.session.steam_donation_total }}</b>
+        </div>
+        {% endif %}
+
+        <a id="disconnect" href="javascript:void(0)">Disconnect Steam account</a>
+      {% else %}
+        <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+          <b style="font-size: 15px;"><em>Steam ID: None</em></b>
+          <i class="fa fa-times-circle" style="color: black;" aria-hidden="true"></i>
+        </div>
+        <a href="{% url 'social:begin' 'steam' %}?next={{ request.get_full_path }}">
+          Click here to connect your Steam account
+        </a>
+        <br/>
+        <em><small>(Note: Connecting your steam account will require you to fill out this form again)</small></em>
+      {% endif %}
+
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-top: 1em;">
+        <h2>Earn in-game TF2 medals for donating!</h2>
+        <small><em>
+          (You must connect your Steam account in order for your donations to count towards a medal.
+          Donations made on our <a href="https://scrap.tf/toth" target="_blank">ScrapTF fundraiser</a> also count towards a medal.
+          We will add your ScrapTF item donation total to your cash donation total before determining which medal to award.
+          Medals will be awarded a few weeks after the event has concluded.)
+        </em></small>
+        <a href="{{ STATIC_URL }}images/medals_large.png" target="_blank">
+          <img style="max-width: 100%;" src="{{ STATIC_URL }}images/medals_small.png">
+        </a>
+
+        <div style="text-align: center; font-size: 15px;">
+          <span><b>$10</b> - Jaunty Camper</span><br/>
+          <span><b>$30</b> - Jaunty Benefactor</span><br/>
+          <span><b>$100</b> - Jaunty Trailblazer</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="right" class="section" style="margin-left: 10px;">
+      {% if hasBids %}
+      <div id="bidsTab">
+        <div class="section-header">
+          <h2>Bidding Challenges/Choices</h2>
+          <em>OPTIONAL</em>
+        </div>
+
+        <p>This section allows you to put your donation to one of our many challenges and choices. Find the choice you wish to use (the filter box will help you find it), select it,
+          and enter the amount of your donation you want to apply to that choice. If you wish to choose a <strong>name</strong>, you will need to use the bid suggestion box on the left, due to software limitations. You may split your donation up as many as 10 ways by clicking the "Add Another" link. </p>
+
+        <div id="info">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <span>Total Allocated:</span>
+            <div style="font-weight: 700; font-size: 24px;">
+              $<span id="totalallocated"></span> / $<span id="donationtotal"></span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <span>Remaining:</span>
+            <div style="font-weight: 700; font-size: 24px;">
+              $<span id="totalremaining"></span>
+            </div>
+          </div>
+        </div>
+
+        {% for form in bidsform %}
         <div class="topleveldonationbidformsetform">
           <br />
-        {% for hidden in form.hidden_fields %}
+          {% for hidden in form.hidden_fields %}
           {{ hidden }}
-        {% endfor %}
-        <span style="color:red">
+          {% endfor %}
+          <span style="color:red">
         {{ form.non_field_errors }}
         </span>
-        {% for field in form.visible_fields %}
-          <div{% if field.name == 'customoptionname' %} class="mf_newoption"{% endif %}>
+          {% for field in form.visible_fields %}
+          <div class="{% if field.name == 'customoptionname' %}mf_newoption{% endif %}" data-field-name="{{ field.name }}">
             <span style="color:red">
             {{ field.errors }}
             </span>
             {{ field.label_tag }} {{ field }}
           </div>
-        {% endfor %}
+          {% endfor %}
         </div>
-      {% endfor %}
-    </div>
-    <br />
-    {% endif %}
-
-    {% if hasTicketPrizes %}
-    <div id="prizesTab">
-      <h2>Prize Tickets</h2>
-      <p>This section allows you to put your donation towards winning a prize. Select the prize you wish to use (the filter box will help you find it), select it, and enter the amount of your donation you want to apply towards it. You may split your donation up as many as 10 ways by clicking the "Add Another" link. Please note the minimum amounts required to get at least one entry towards the prize.</p>
-
-      <div id="info">
-        Total Allocated: $<span id="totalprizeallocated"></span> / $<span id="prizedonationtotal"></span>
-        <br />
-        Remaining: $<span id="totalprizeremaining"></span>
+        {% endfor %}
       </div>
+      <br />
+      {% endif %}
 
-      {% for form in prizesform %}
+      {% if hasTicketPrizes %}
+      <div id="prizesTab">
+        <h2>Prize Tickets</h2>
+        <p>This section allows you to put your donation towards winning a prize. Select the prize you wish to use (the filter box will help you find it), select it, and enter the amount of your donation you want to apply towards it. You may split your donation up as many as 10 ways by clicking the "Add Another" link. Please note the minimum amounts required to get at least one entry towards the prize.</p>
+
+        <div id="info">
+          Total Allocated: $<span id="totalprizeallocated"></span> / $<span id="prizedonationtotal"></span>
+          <br />
+          Remaining: $<span id="totalprizeremaining"></span>
+        </div>
+
+        {% for form in prizesform %}
         <div class="toplevelprizeticketformsetform">
           <br />
-        {% for hidden in form.hidden_fields %}
+          {% for hidden in form.hidden_fields %}
           {{ hidden }}
-        {% endfor %}
-        <span style="color:red">
+          {% endfor %}
+          <span style="color:red">
         {{ form.non_field_errors }}
         </span>
-        {% for field in form.visible_fields %}
+          {% for field in form.visible_fields %}
           <div>
             <span style="color:red">
             {{ field.errors }}
             </span>
             {{ field.label_tag }} {{ field }}
           </div>
-        {% endfor %}
+          {% endfor %}
         </div>
-      {% endfor %}
-    </div>
-    <br />
-    {% endif %}
+        {% endfor %}
+      </div>
+      <br />
+      {% endif %}
 
     {{ prizesform.management_form }}
+    </div>
   </div>
 
   <p><input type="submit" value="Donate!" /></p>
@@ -495,8 +546,91 @@ $(function() {
 })
 </script>
 
-<div id="footer">
-  <h2>Games Done Quick - Event Tracker</h2>
-</div>
+<form id="disconnectForm" style="display: none;" action="{% url 'social:disconnect' 'steam' %}?next={{ request.get_full_path }}" method="POST">
+  {% csrf_token %}
+</form>
+
+{% if not request.session.uid %}
+<script>
+  (function () {
+    // Do not show the modals again if the user has already declined them.
+    if ($.cookie('declinedSteamConnect', Boolean)) {
+      return;
+    }
+
+    Ply.dialog({
+      askAccount: {
+        ui: 'confirm',
+        data: {
+          children: [{
+            tag: 'h3',
+            innerHTML: 'Thank you for donating to Tip of the Hats!',
+            css: {
+              'margin-bottom': '1em',
+              'margin-top': '-1em'
+            }
+          }, {
+            tag: 'p',
+            innerHTML: 'Do you have a Steam account?'
+          }],
+          ok: 'YES',
+          cancel: 'NO'
+        },
+        next: 'askConnect', // OK button
+        nextEffect: '3d-flip[180,-180]',
+        backEffect: 'scale'
+      },
+      askConnect: {
+        data: {
+          children: [{
+            tag: 'p',
+            css: {
+              'font-size': '18px'
+            },
+            innerHTML: 'Do you want to link your Steam account to be eligible to receive in-game items for Team Fortress 2?'
+          }, {
+            tag: 'div',
+            css: {
+              display: 'flex',
+              'justify-content': 'center',
+              'align-items': 'center',
+              'text-align': 'center',
+              'font-size': '13px'
+            },
+            innerHTML:
+              '<a href="{{ STATIC_URL }}images/medals_large.png" target="_blank">' +
+                      '<img src="{{ STATIC_URL }}images/medals_small.png">' +
+              '</a>' +
+              '<div style="margin-left: 1em;">' +
+                      'In-game medals will be awarded to qualifying donors!<br/>' +
+                      '$10 for Bronze<br/>' +
+                      '$30 for Silver<br/>' +
+                      '$100 for Gold<br/>' +
+                      '(cumulative amounts over entire event)<br/>' +
+              '</div>'
+          }, {
+            tag: 'em',
+            innerHTML: 'Clicking "Yes" will take you to Steam\'s login page',
+            css: {
+              'font-size': 'smaller'
+            }
+          }],
+          ok: 'YES',
+          cancel: 'NO'
+        }
+      }
+    }).always(function (ui) {
+      if (ui.state) {
+        // OK
+        window.location = "{% url 'social:begin' 'steam' %}?next={{ request.get_full_path }}";
+      } else {
+        // Cancel
+        // ui.by — 'overlay', 'x', 'esc'
+        $.cookie('declinedSteamConnect', true);
+      }
+    });
+  })();
+</script>
+{% endif %}
 
 {% endblock %}
