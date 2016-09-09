@@ -363,8 +363,8 @@ class PrizeTicketInline(CustomStackedInline):
 
 class DonationAdmin(CustomModelAdmin):
   form = DonationForm
-  list_display = ('donor', 'visible_donor_name', 'amount', 'comment', 'commentlanguage', 'timereceived', 'event', 'domain', 'transactionstate', 'bidstate', 'readstate', 'commentstate',)
-  list_editable = ('transactionstate', 'bidstate', 'readstate', 'commentstate')
+  list_display = ('donor', 'visible_donor_name', 'amount', 'comment', 'commentlanguage', 'timereceived', 'event', 'domain', 'transactionstate', 'bidstate', 'readstate', 'commentstate', 'steamid')
+  list_editable = ('transactionstate', 'bidstate', 'readstate', 'commentstate', 'steamid')
   search_fields = ('donor__email', 'donor__paypalemail', 'donor__alias', 'donor__firstname', 'donor__lastname', 'amount', 'comment', 'modcomment')
   list_filter = ('event', 'transactionstate', 'readstate', 'commentstate', 'bidstate', 'commentlanguage', DonationListFilter)
   readonly_fields = ['domainId']
@@ -374,7 +374,7 @@ class DonationAdmin(CustomModelAdmin):
     ('Comment State', {'fields': ('comment', 'modcomment')}),
     ('Donation State', {'fields': (('transactionstate', 'bidstate', 'readstate', 'commentstate'),)}),
     ('Financial', {'fields': (('amount', 'fee', 'currency', 'testdonation'),)}),
-    ('Extra Donor Info', {'fields': (('requestedvisibility', 'requestedalias', 'requestedemail'),)}),
+    ('Extra Donor Info', {'fields': (('requestedvisibility', 'requestedalias', 'requestedemail', 'steamid'),)}),
     ('Other', {'fields': (('domain', 'domainId'),)}),
   ]
   def visible_donor_name(self, obj):
