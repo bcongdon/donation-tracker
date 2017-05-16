@@ -8,5 +8,7 @@ install:
   - cd tracker
   - git checkout -qf $TRAVIS_COMMIT
   - pip install -r requirements.txt
+  - cd ../..
 script:
+  - cd toplevel
   - python manage.py test
