@@ -18,4 +18,4 @@ install:
   - cd ../..
 
 script:
-  - cd toplevel && cp example_local.py local.py && python manage.py test
+  - cd toplevel && cp tracker/tests/travis_local.py local.py && python manage.py test
