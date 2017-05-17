@@ -56,3 +56,13 @@ HAS_GIANTBOMB_API_KEY = False
 # GIANTBOMB_API_KEY = 'Itsreallynicetohaveanditsfreetomakeanaccountbutnotneccessary'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+IGNORE_TESTS = (
+    'tracker.tests.test_prizemail.TestAutomailPrizeWinners.testAutoMail',
+    'tracker.tests.test_schedule.TestMergeSchedule.test_delete_missing_runs',
+    'tracker.tests.test_speedrun.TestSpeedRun.test_removing_run_from_schedule',
+    'tracker.tests.test_prize.TestPrizeMultiWin.testWinMultiPrize',
+    'tracker.tests.test_prize.TestPrizeMultiWin.testWinMultiPrizeLowerThanMaxWin',
+    'tracker.tests.test_prize.TestPrizeMultiWin.testWinMultiPrizeWithAccept',
+    'tracker.tests.test_prize.TestPrizeMultiWin.testWinMultiPrizeWithDeny'
+)
